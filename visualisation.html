@@ -1,0 +1,204 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+        #loadingBar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width: 500px;
+            height: 500px;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+        div.outerBorder {
+            position:relative;
+            top:400px;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+<div id="loadingBar">
+    <div class="outerBorder">
+        <div id="text">0%</div>
+        <div id="border">
+            <div id="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": "d86a5701-a238-4cc0-bffc-eefb4c0251d7", "label": "d86a5701-a238-4cc0-bffc-eefb4c0251d7", "shape": "dot"}, {"id": "73836406-3ef3-4ae6-b18d-b496e07463a8", "label": "73836406-3ef3-4ae6-b18d-b496e07463a8", "shape": "dot"}, {"id": "255c6c4b-b9da-4838-9313-25e98b4f5f2f", "label": "255c6c4b-b9da-4838-9313-25e98b4f5f2f", "shape": "dot"}, {"id": "2395d23e-0e0f-494c-875d-e873f7743dd4", "label": "2395d23e-0e0f-494c-875d-e873f7743dd4", "shape": "dot"}, {"id": "fc2143e1-e6aa-460e-bf11-3706d13517af", "label": "fc2143e1-e6aa-460e-bf11-3706d13517af", "shape": "dot"}, {"id": "b4183d95-d742-44a2-a55e-d380e0261332", "label": "b4183d95-d742-44a2-a55e-d380e0261332", "shape": "dot"}, {"id": "6aed60fa-d2eb-4221-bd7a-b119b0933964", "label": "6aed60fa-d2eb-4221-bd7a-b119b0933964", "shape": "dot"}, {"id": "91e7a10b-dfef-4393-aa5c-4c29c6e129c7", "label": "91e7a10b-dfef-4393-aa5c-4c29c6e129c7", "shape": "dot"}, {"id": "f50e8008-c867-4a2a-a56e-21043def65c2", "label": "f50e8008-c867-4a2a-a56e-21043def65c2", "shape": "dot"}, {"id": "3773ce50-4c49-4717-9ddf-2dd0aea91d21", "label": "3773ce50-4c49-4717-9ddf-2dd0aea91d21", "shape": "dot"}, {"id": "004cae1b-041a-4b81-a9c1-0fbc5850a024", "label": "004cae1b-041a-4b81-a9c1-0fbc5850a024", "shape": "dot"}, {"id": "d041893a-ef95-4a87-984c-29066a8c668f", "label": "d041893a-ef95-4a87-984c-29066a8c668f", "shape": "dot"}, {"id": "688c77f4-85b6-42b2-be5e-b67f0839ff69", "label": "688c77f4-85b6-42b2-be5e-b67f0839ff69", "shape": "dot"}, {"id": "d9378bec-3eaf-4ff4-9ecf-b5379e6163fa", "label": "d9378bec-3eaf-4ff4-9ecf-b5379e6163fa", "shape": "dot"}, {"id": "87c22e06-753e-4a74-ab25-ec0d89834999", "label": "87c22e06-753e-4a74-ab25-ec0d89834999", "shape": "dot"}, {"id": "eb38d580-5a99-4a28-a420-fb0d8cc43b4a", "label": "eb38d580-5a99-4a28-a420-fb0d8cc43b4a", "shape": "dot"}, {"id": "09ccb766-12fd-42d3-81aa-42115891d0e1", "label": "09ccb766-12fd-42d3-81aa-42115891d0e1", "shape": "dot"}, {"id": "4ad0be09-38f1-4c75-93d7-9fd32a721d75", "label": "4ad0be09-38f1-4c75-93d7-9fd32a721d75", "shape": "dot"}, {"id": "ba7cea96-3c22-47b1-ad34-e86242bc4ebb", "label": "ba7cea96-3c22-47b1-ad34-e86242bc4ebb", "shape": "dot"}, {"id": "092e6cb5-bde5-460f-bffc-a954e2bad1f0", "label": "092e6cb5-bde5-460f-bffc-a954e2bad1f0", "shape": "dot"}, {"id": "39de1b3a-f238-439f-ae7a-ebe5929d027f", "label": "39de1b3a-f238-439f-ae7a-ebe5929d027f", "shape": "dot"}, {"id": "ff8b821b-92dd-496d-b8bb-e9673a0e813f", "label": "ff8b821b-92dd-496d-b8bb-e9673a0e813f", "shape": "dot"}, {"id": "8cfec527-fb50-4a49-acce-fa3fc3ef5b87", "label": "8cfec527-fb50-4a49-acce-fa3fc3ef5b87", "shape": "dot"}, {"id": "1215980e-5a4f-4374-aa1e-74a670f0607f", "label": "1215980e-5a4f-4374-aa1e-74a670f0607f", "shape": "dot"}, {"id": "2f3e1e87-f180-4812-b533-012c07d96f7b", "label": "2f3e1e87-f180-4812-b533-012c07d96f7b", "shape": "dot"}, {"id": "dac3d9e4-b58d-4b8b-bde6-f81601f6c506", "label": "dac3d9e4-b58d-4b8b-bde6-f81601f6c506", "shape": "dot"}, {"id": "10f63f97-3001-4196-b69c-b557063be722", "label": "10f63f97-3001-4196-b69c-b557063be722", "shape": "dot"}, {"id": "a2d502cd-8c4c-4b4e-b3c8-701cd5d8d1ed", "label": "a2d502cd-8c4c-4b4e-b3c8-701cd5d8d1ed", "shape": "dot"}, {"id": "c7f80fdf-e05c-4d88-9897-909810974768", "label": "c7f80fdf-e05c-4d88-9897-909810974768", "shape": "dot"}, {"id": "e7db9891-ade5-45a1-b2ae-eec93ae2bf96", "label": "e7db9891-ade5-45a1-b2ae-eec93ae2bf96", "shape": "dot"}, {"id": "67c92a12-2054-45c1-9919-dec43582b774", "label": "67c92a12-2054-45c1-9919-dec43582b774", "shape": "dot"}, {"id": "50ba39f0-d37b-42cf-9e5d-758df20fa14e", "label": "50ba39f0-d37b-42cf-9e5d-758df20fa14e", "shape": "dot"}, {"id": "38fd0e1a-a6d4-4e2f-8b6a-3a47763bb88a", "label": "38fd0e1a-a6d4-4e2f-8b6a-3a47763bb88a", "shape": "dot"}, {"id": "d9bf80a8-6456-471f-8a1a-7da897a7080d", "label": "d9bf80a8-6456-471f-8a1a-7da897a7080d", "shape": "dot"}, {"id": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99", "label": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99", "shape": "dot"}, {"id": "7232f780-fc36-4988-bb7a-798224fb894b", "label": "7232f780-fc36-4988-bb7a-798224fb894b", "shape": "dot"}, {"id": "3f56bf4f-903f-4966-a64a-5da3a1cdf775", "label": "3f56bf4f-903f-4966-a64a-5da3a1cdf775", "shape": "dot"}, {"id": "7c9b409b-5b18-4b93-bcc7-9b3bdfb03aa5", "label": "7c9b409b-5b18-4b93-bcc7-9b3bdfb03aa5", "shape": "dot"}, {"id": "36feaec7-2629-4ef7-a921-5ce3eba1f39b", "label": "36feaec7-2629-4ef7-a921-5ce3eba1f39b", "shape": "dot"}, {"id": "43c4549a-1b45-4757-b5f2-cc368405a3e4", "label": "43c4549a-1b45-4757-b5f2-cc368405a3e4", "shape": "dot"}, {"id": "068f08bb-5370-4cc8-a65a-b97960472e0c", "label": "068f08bb-5370-4cc8-a65a-b97960472e0c", "shape": "dot"}, {"id": "71f368e4-5799-4256-8dc8-6e57d8165cea", "label": "71f368e4-5799-4256-8dc8-6e57d8165cea", "shape": "dot"}, {"id": "05c05b46-d8d8-4ea5-b28b-8351e3fc0c1f", "label": "05c05b46-d8d8-4ea5-b28b-8351e3fc0c1f", "shape": "dot"}, {"id": "a0c80e8d-d206-4811-86e8-7913b2627c32", "label": "a0c80e8d-d206-4811-86e8-7913b2627c32", "shape": "dot"}, {"id": "7cf2603c-1e73-4919-80c5-e47292a2bc40", "label": "7cf2603c-1e73-4919-80c5-e47292a2bc40", "shape": "dot"}, {"id": "db5f36bf-0e8b-4e74-8247-f0e15958b2c8", "label": "db5f36bf-0e8b-4e74-8247-f0e15958b2c8", "shape": "dot"}, {"id": "77a470ec-9982-449c-9a99-e4604d6991ac", "label": "77a470ec-9982-449c-9a99-e4604d6991ac", "shape": "dot"}, {"id": "ef66748b-d2f3-44cf-b80f-8b3071d29d73", "label": "ef66748b-d2f3-44cf-b80f-8b3071d29d73", "shape": "dot"}, {"id": "3b9dcd66-ffb7-4030-9a49-d6cf978495e1", "label": "3b9dcd66-ffb7-4030-9a49-d6cf978495e1", "shape": "dot"}, {"id": "06ebbc42-6a6a-42e9-8606-33a56b0a2a0c", "label": "06ebbc42-6a6a-42e9-8606-33a56b0a2a0c", "shape": "dot"}, {"id": "32e876d8-26cb-4784-a771-a83ae6768385", "label": "32e876d8-26cb-4784-a771-a83ae6768385", "shape": "dot"}, {"id": "c2953d83-70bf-48c0-9d5c-a46709d86956", "label": "c2953d83-70bf-48c0-9d5c-a46709d86956", "shape": "dot"}, {"id": "e82d9871-ffc5-4100-a3cd-5cde722f6c2c", "label": "e82d9871-ffc5-4100-a3cd-5cde722f6c2c", "shape": "dot"}, {"id": "6f572f6f-2cc9-4f99-a90f-e281b1d3a4b7", "label": "6f572f6f-2cc9-4f99-a90f-e281b1d3a4b7", "shape": "dot"}, {"id": "52888b14-577a-4862-aa16-6371dfbb3d1a", "label": "52888b14-577a-4862-aa16-6371dfbb3d1a", "shape": "dot"}, {"id": "5032d6a1-3c8f-419f-84d9-abdf4bab53a2", "label": "5032d6a1-3c8f-419f-84d9-abdf4bab53a2", "shape": "dot"}, {"id": "aa462e35-190c-42db-a3fd-d3b760a87397", "label": "aa462e35-190c-42db-a3fd-d3b760a87397", "shape": "dot"}, {"id": "ab95b5a1-7ee6-4aeb-908f-a44a6b878aa4", "label": "ab95b5a1-7ee6-4aeb-908f-a44a6b878aa4", "shape": "dot"}, {"id": "77e95f65-561a-462c-941f-1002bed959f1", "label": "77e95f65-561a-462c-941f-1002bed959f1", "shape": "dot"}, {"id": "1a622d4d-ab5d-4816-bfb3-1889789bfa57", "label": "1a622d4d-ab5d-4816-bfb3-1889789bfa57", "shape": "dot"}, {"id": "de20f9fa-b25a-4659-9618-4eb8d48a174e", "label": "de20f9fa-b25a-4659-9618-4eb8d48a174e", "shape": "dot"}, {"id": "12c03767-81de-427e-b526-f8a14c43730e", "label": "12c03767-81de-427e-b526-f8a14c43730e", "shape": "dot"}, {"id": "f30c26da-6e9d-4ff8-a6fb-6df7c1e12c91", "label": "f30c26da-6e9d-4ff8-a6fb-6df7c1e12c91", "shape": "dot"}, {"id": "dd1941ab-dd13-4268-83d5-108c903c9a79", "label": "dd1941ab-dd13-4268-83d5-108c903c9a79", "shape": "dot"}, {"id": "d1334943-6ddf-41b9-9fcf-bcc1605b7165", "label": "d1334943-6ddf-41b9-9fcf-bcc1605b7165", "shape": "dot"}, {"id": "e22fc238-5532-407f-845b-ba4490cf736b", "label": "e22fc238-5532-407f-845b-ba4490cf736b", "shape": "dot"}, {"id": "1c0fdead-cd64-467a-9297-c43a99313da4", "label": "1c0fdead-cd64-467a-9297-c43a99313da4", "shape": "dot"}, {"id": "fc86b8da-c078-473a-8204-5586e8d4b49f", "label": "fc86b8da-c078-473a-8204-5586e8d4b49f", "shape": "dot"}, {"id": "ac58e510-76e6-47f7-85d5-4cf87c0da7be", "label": "ac58e510-76e6-47f7-85d5-4cf87c0da7be", "shape": "dot"}, {"id": "5b49c298-b3cb-46bb-9874-d7d260179c36", "label": "5b49c298-b3cb-46bb-9874-d7d260179c36", "shape": "dot"}, {"id": "1e4afcbf-1fa6-4a61-8bb0-d2fe2f6a614b", "label": "1e4afcbf-1fa6-4a61-8bb0-d2fe2f6a614b", "shape": "dot"}, {"id": "b99da68e-50a2-48a6-9d0f-da1d93a58b39", "label": "b99da68e-50a2-48a6-9d0f-da1d93a58b39", "shape": "dot"}, {"id": "d1b07c3a-9d2a-49c6-973e-14287dafb398", "label": "d1b07c3a-9d2a-49c6-973e-14287dafb398", "shape": "dot"}, {"id": "fae779da-33dd-471a-951d-9091a1372cd6", "label": "fae779da-33dd-471a-951d-9091a1372cd6", "shape": "dot"}, {"id": "66954cc3-3b45-49d1-b806-49f2a29febfb", "label": "66954cc3-3b45-49d1-b806-49f2a29febfb", "shape": "dot"}, {"id": "175cf3eb-d3eb-4053-a41c-14a4df10a6fd", "label": "175cf3eb-d3eb-4053-a41c-14a4df10a6fd", "shape": "dot"}, {"id": "78803ea9-03be-4ad5-9c50-35c7c3e3cd74", "label": "78803ea9-03be-4ad5-9c50-35c7c3e3cd74", "shape": "dot"}, {"id": "876ea63a-af83-4aeb-81b7-a4650d3fa5c6", "label": "876ea63a-af83-4aeb-81b7-a4650d3fa5c6", "shape": "dot"}, {"id": "b59dfa82-8897-4d42-a772-83d12aa1a4d8", "label": "b59dfa82-8897-4d42-a772-83d12aa1a4d8", "shape": "dot"}, {"id": "ae43b537-6cc3-48fe-8551-4057dcbb2f71", "label": "ae43b537-6cc3-48fe-8551-4057dcbb2f71", "shape": "dot"}, {"id": "1eb88400-98ae-42a7-b4fe-aee98997cb8d", "label": "1eb88400-98ae-42a7-b4fe-aee98997cb8d", "shape": "dot"}, {"id": "2b85c386-6b40-4dd5-9c8e-4b740f78423b", "label": "2b85c386-6b40-4dd5-9c8e-4b740f78423b", "shape": "dot"}, {"id": "2d40a883-4e9a-4163-901f-1c19f241b2fa", "label": "2d40a883-4e9a-4163-901f-1c19f241b2fa", "shape": "dot"}, {"id": "f993289c-7c07-4967-9887-6bef8d6043ec", "label": "f993289c-7c07-4967-9887-6bef8d6043ec", "shape": "dot"}, {"id": "9d3641bc-a61c-47f3-a753-d0a6fe46a0c9", "label": "9d3641bc-a61c-47f3-a753-d0a6fe46a0c9", "shape": "dot"}, {"id": "a19fc590-b10e-4400-ac50-fc6283aa173d", "label": "a19fc590-b10e-4400-ac50-fc6283aa173d", "shape": "dot"}, {"id": "6211b1b4-6562-47aa-a243-c49e3064b48e", "label": "6211b1b4-6562-47aa-a243-c49e3064b48e", "shape": "dot"}, {"id": "c2d7f4bb-a683-433f-b82b-1f5d08574783", "label": "c2d7f4bb-a683-433f-b82b-1f5d08574783", "shape": "dot"}, {"id": "e02696cd-bdf7-4b96-a831-d104ff477f67", "label": "e02696cd-bdf7-4b96-a831-d104ff477f67", "shape": "dot"}, {"id": "21a70273-d80e-4e98-a207-ea38f8e16cda", "label": "21a70273-d80e-4e98-a207-ea38f8e16cda", "shape": "dot"}, {"id": "5dcd4f0f-ec6d-44d8-90bc-e3a28b3baf75", "label": "5dcd4f0f-ec6d-44d8-90bc-e3a28b3baf75", "shape": "dot"}, {"id": "885b069c-61a1-4a89-9ae8-bf50189bc533", "label": "885b069c-61a1-4a89-9ae8-bf50189bc533", "shape": "dot"}, {"id": "53eceea2-aec1-43b2-a907-b72d9f95f0ec", "label": "53eceea2-aec1-43b2-a907-b72d9f95f0ec", "shape": "dot"}, {"id": "0cdc053d-dfd3-4a7b-b78a-823b6a626206", "label": "0cdc053d-dfd3-4a7b-b78a-823b6a626206", "shape": "dot"}, {"id": "fb23fb4a-f94d-426a-9a9a-4a63ef1193a0", "label": "fb23fb4a-f94d-426a-9a9a-4a63ef1193a0", "shape": "dot"}, {"id": "69add7ea-c1d6-4957-873e-e2bc7ae0de8c", "label": "69add7ea-c1d6-4957-873e-e2bc7ae0de8c", "shape": "dot"}, {"id": "f6043fab-1512-490a-bee9-6696746b8052", "label": "f6043fab-1512-490a-bee9-6696746b8052", "shape": "dot"}, {"id": "5875782f-8516-4029-997a-383e39557162", "label": "5875782f-8516-4029-997a-383e39557162", "shape": "dot"}, {"id": "8ec2f222-9fb6-45e0-aacd-e2019d9075b8", "label": "8ec2f222-9fb6-45e0-aacd-e2019d9075b8", "shape": "dot"}, {"id": "830c3872-14c2-40d1-bc1e-89680288b589", "label": "830c3872-14c2-40d1-bc1e-89680288b589", "shape": "dot"}, {"id": "dbefa13a-18b5-4d13-a255-a03ed706c92f", "label": "dbefa13a-18b5-4d13-a255-a03ed706c92f", "shape": "dot"}, {"id": "e6431e81-3bd2-40ec-86c0-75d1f668bbed", "label": "e6431e81-3bd2-40ec-86c0-75d1f668bbed", "shape": "dot"}, {"id": "7c555044-fdd1-43e5-8df1-86515b0c3c34", "label": "7c555044-fdd1-43e5-8df1-86515b0c3c34", "shape": "dot"}, {"id": "56278358-2fde-433f-abe7-06ea1dfc51e8", "label": "56278358-2fde-433f-abe7-06ea1dfc51e8", "shape": "dot"}, {"id": "bd2029e2-9059-4807-a823-5eba30b8e525", "label": "bd2029e2-9059-4807-a823-5eba30b8e525", "shape": "dot"}, {"id": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3", "label": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3", "shape": "dot"}, {"id": "e5691627-fef7-4e57-b542-696085708787", "label": "e5691627-fef7-4e57-b542-696085708787", "shape": "dot"}, {"id": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7", "label": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7", "shape": "dot"}, {"id": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1", "label": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1", "shape": "dot"}, {"id": "fa19ec6d-0f4b-428d-bf02-caff84684c6e", "label": "fa19ec6d-0f4b-428d-bf02-caff84684c6e", "shape": "dot"}, {"id": "b2535b92-b9b7-4aca-9dac-73e0056a72f0", "label": "b2535b92-b9b7-4aca-9dac-73e0056a72f0", "shape": "dot"}, {"id": "f6ebf273-7166-44a4-a62d-fa0962b9ac3b", "label": "f6ebf273-7166-44a4-a62d-fa0962b9ac3b", "shape": "dot"}, {"id": "4e9109ff-0e90-42b3-bdb1-b09a4ce1f8a6", "label": "4e9109ff-0e90-42b3-bdb1-b09a4ce1f8a6", "shape": "dot"}, {"id": "867a6cf8-223e-474a-9397-8ab9775bd14a", "label": "867a6cf8-223e-474a-9397-8ab9775bd14a", "shape": "dot"}, {"id": "4b11b3cd-7a06-453d-a115-10af027b18f7", "label": "4b11b3cd-7a06-453d-a115-10af027b18f7", "shape": "dot"}, {"id": "5b0b55ad-3465-43b7-9c37-55415ed6c5e7", "label": "5b0b55ad-3465-43b7-9c37-55415ed6c5e7", "shape": "dot"}, {"id": "f2077619-cc7d-4c1f-aa40-c5540a69543a", "label": "f2077619-cc7d-4c1f-aa40-c5540a69543a", "shape": "dot"}, {"id": "bfd0d42b-2086-4580-9df4-0bc78bfdf408", "label": "bfd0d42b-2086-4580-9df4-0bc78bfdf408", "shape": "dot"}, {"id": "b68214ba-d90c-46fd-be11-8c79168a3463", "label": "b68214ba-d90c-46fd-be11-8c79168a3463", "shape": "dot"}, {"id": "ae72e00e-e679-4367-893a-4bc7a4814738", "label": "ae72e00e-e679-4367-893a-4bc7a4814738", "shape": "dot"}, {"id": "fcb359b1-5f9d-482a-8c35-084ddea4d51a", "label": "fcb359b1-5f9d-482a-8c35-084ddea4d51a", "shape": "dot"}, {"id": "0c1eb1a8-e9e9-4a19-a629-f4866581c44e", "label": "0c1eb1a8-e9e9-4a19-a629-f4866581c44e", "shape": "dot"}, {"id": "8d4dfec6-ff24-4839-9d43-ee486637798f", "label": "8d4dfec6-ff24-4839-9d43-ee486637798f", "shape": "dot"}, {"id": "56838410-51b4-41b4-bfe8-1dc7de19f003", "label": "56838410-51b4-41b4-bfe8-1dc7de19f003", "shape": "dot"}, {"id": "c070677e-31d2-40b4-a8bd-6223bba5eada", "label": "c070677e-31d2-40b4-a8bd-6223bba5eada", "shape": "dot"}, {"id": "9f17cb45-a384-47a8-a93a-9fb57ce3d826", "label": "9f17cb45-a384-47a8-a93a-9fb57ce3d826", "shape": "dot"}, {"id": "131a6733-3883-4da0-aada-93090b29551d", "label": "131a6733-3883-4da0-aada-93090b29551d", "shape": "dot"}]);
+        edges = new vis.DataSet([{"from": "d86a5701-a238-4cc0-bffc-eefb4c0251d7", "to": "d86a5701-a238-4cc0-bffc-eefb4c0251d7"}, {"from": "73836406-3ef3-4ae6-b18d-b496e07463a8", "to": "73836406-3ef3-4ae6-b18d-b496e07463a8"}, {"from": "255c6c4b-b9da-4838-9313-25e98b4f5f2f", "to": "d86a5701-a238-4cc0-bffc-eefb4c0251d7"}, {"from": "2395d23e-0e0f-494c-875d-e873f7743dd4", "to": "73836406-3ef3-4ae6-b18d-b496e07463a8"}, {"from": "fc2143e1-e6aa-460e-bf11-3706d13517af", "to": "fc2143e1-e6aa-460e-bf11-3706d13517af"}, {"from": "b4183d95-d742-44a2-a55e-d380e0261332", "to": "b4183d95-d742-44a2-a55e-d380e0261332"}, {"from": "6aed60fa-d2eb-4221-bd7a-b119b0933964", "to": "6aed60fa-d2eb-4221-bd7a-b119b0933964"}, {"from": "91e7a10b-dfef-4393-aa5c-4c29c6e129c7", "to": "b4183d95-d742-44a2-a55e-d380e0261332"}, {"from": "f50e8008-c867-4a2a-a56e-21043def65c2", "to": "f50e8008-c867-4a2a-a56e-21043def65c2"}, {"from": "3773ce50-4c49-4717-9ddf-2dd0aea91d21", "to": "fc2143e1-e6aa-460e-bf11-3706d13517af"}, {"from": "004cae1b-041a-4b81-a9c1-0fbc5850a024", "to": "004cae1b-041a-4b81-a9c1-0fbc5850a024"}, {"from": "d041893a-ef95-4a87-984c-29066a8c668f", "to": "d041893a-ef95-4a87-984c-29066a8c668f"}, {"from": "688c77f4-85b6-42b2-be5e-b67f0839ff69", "to": "688c77f4-85b6-42b2-be5e-b67f0839ff69"}, {"from": "d9378bec-3eaf-4ff4-9ecf-b5379e6163fa", "to": "004cae1b-041a-4b81-a9c1-0fbc5850a024"}, {"from": "87c22e06-753e-4a74-ab25-ec0d89834999", "to": "f50e8008-c867-4a2a-a56e-21043def65c2"}, {"from": "eb38d580-5a99-4a28-a420-fb0d8cc43b4a", "to": "688c77f4-85b6-42b2-be5e-b67f0839ff69"}, {"from": "09ccb766-12fd-42d3-81aa-42115891d0e1", "to": "d041893a-ef95-4a87-984c-29066a8c668f"}, {"from": "4ad0be09-38f1-4c75-93d7-9fd32a721d75", "to": "4ad0be09-38f1-4c75-93d7-9fd32a721d75"}, {"from": "ba7cea96-3c22-47b1-ad34-e86242bc4ebb", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "092e6cb5-bde5-460f-bffc-a954e2bad1f0", "to": "6aed60fa-d2eb-4221-bd7a-b119b0933964"}, {"from": "39de1b3a-f238-439f-ae7a-ebe5929d027f", "to": "4ad0be09-38f1-4c75-93d7-9fd32a721d75"}, {"from": "ff8b821b-92dd-496d-b8bb-e9673a0e813f", "to": "ff8b821b-92dd-496d-b8bb-e9673a0e813f"}, {"from": "8cfec527-fb50-4a49-acce-fa3fc3ef5b87", "to": "092e6cb5-bde5-460f-bffc-a954e2bad1f0"}, {"from": "1215980e-5a4f-4374-aa1e-74a670f0607f", "to": "ff8b821b-92dd-496d-b8bb-e9673a0e813f"}, {"from": "2f3e1e87-f180-4812-b533-012c07d96f7b", "to": "2f3e1e87-f180-4812-b533-012c07d96f7b"}, {"from": "dac3d9e4-b58d-4b8b-bde6-f81601f6c506", "to": "dac3d9e4-b58d-4b8b-bde6-f81601f6c506"}, {"from": "10f63f97-3001-4196-b69c-b557063be722", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "a2d502cd-8c4c-4b4e-b3c8-701cd5d8d1ed", "to": "dac3d9e4-b58d-4b8b-bde6-f81601f6c506"}, {"from": "c7f80fdf-e05c-4d88-9897-909810974768", "to": "2f3e1e87-f180-4812-b533-012c07d96f7b"}, {"from": "e7db9891-ade5-45a1-b2ae-eec93ae2bf96", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "67c92a12-2054-45c1-9919-dec43582b774", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "50ba39f0-d37b-42cf-9e5d-758df20fa14e", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "38fd0e1a-a6d4-4e2f-8b6a-3a47763bb88a", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "d9bf80a8-6456-471f-8a1a-7da897a7080d", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "7232f780-fc36-4988-bb7a-798224fb894b", "to": "4fdb9756-41d4-4fb3-9ea8-b61c8417cc99"}, {"from": "3f56bf4f-903f-4966-a64a-5da3a1cdf775", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "7c9b409b-5b18-4b93-bcc7-9b3bdfb03aa5", "to": "a0c80e8d-d206-4811-86e8-7913b2627c32"}, {"from": "36feaec7-2629-4ef7-a921-5ce3eba1f39b", "to": "43c4549a-1b45-4757-b5f2-cc368405a3e4"}, {"from": "43c4549a-1b45-4757-b5f2-cc368405a3e4", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "068f08bb-5370-4cc8-a65a-b97960472e0c", "to": "43c4549a-1b45-4757-b5f2-cc368405a3e4"}, {"from": "71f368e4-5799-4256-8dc8-6e57d8165cea", "to": "a0c80e8d-d206-4811-86e8-7913b2627c32"}, {"from": "05c05b46-d8d8-4ea5-b28b-8351e3fc0c1f", "to": "a0c80e8d-d206-4811-86e8-7913b2627c32"}, {"from": "a0c80e8d-d206-4811-86e8-7913b2627c32", "to": "d9bf80a8-6456-471f-8a1a-7da897a7080d"}, {"from": "7cf2603c-1e73-4919-80c5-e47292a2bc40", "to": "a0c80e8d-d206-4811-86e8-7913b2627c32"}, {"from": "db5f36bf-0e8b-4e74-8247-f0e15958b2c8", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "77a470ec-9982-449c-9a99-e4604d6991ac", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "ef66748b-d2f3-44cf-b80f-8b3071d29d73", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "3b9dcd66-ffb7-4030-9a49-d6cf978495e1", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "06ebbc42-6a6a-42e9-8606-33a56b0a2a0c", "to": "3b9dcd66-ffb7-4030-9a49-d6cf978495e1"}, {"from": "32e876d8-26cb-4784-a771-a83ae6768385", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "c2953d83-70bf-48c0-9d5c-a46709d86956", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "e82d9871-ffc5-4100-a3cd-5cde722f6c2c", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "6f572f6f-2cc9-4f99-a90f-e281b1d3a4b7", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "52888b14-577a-4862-aa16-6371dfbb3d1a", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "5032d6a1-3c8f-419f-84d9-abdf4bab53a2", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "aa462e35-190c-42db-a3fd-d3b760a87397", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "ab95b5a1-7ee6-4aeb-908f-a44a6b878aa4", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "77e95f65-561a-462c-941f-1002bed959f1", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "1a622d4d-ab5d-4816-bfb3-1889789bfa57", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "de20f9fa-b25a-4659-9618-4eb8d48a174e", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "12c03767-81de-427e-b526-f8a14c43730e", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "f30c26da-6e9d-4ff8-a6fb-6df7c1e12c91", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "dd1941ab-dd13-4268-83d5-108c903c9a79", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "d1334943-6ddf-41b9-9fcf-bcc1605b7165", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "e22fc238-5532-407f-845b-ba4490cf736b", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "1c0fdead-cd64-467a-9297-c43a99313da4", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "fc86b8da-c078-473a-8204-5586e8d4b49f", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "ac58e510-76e6-47f7-85d5-4cf87c0da7be", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "5b49c298-b3cb-46bb-9874-d7d260179c36", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "1e4afcbf-1fa6-4a61-8bb0-d2fe2f6a614b", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "b99da68e-50a2-48a6-9d0f-da1d93a58b39", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "d1b07c3a-9d2a-49c6-973e-14287dafb398", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "fae779da-33dd-471a-951d-9091a1372cd6", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "66954cc3-3b45-49d1-b806-49f2a29febfb", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "175cf3eb-d3eb-4053-a41c-14a4df10a6fd", "to": "fae779da-33dd-471a-951d-9091a1372cd6"}, {"from": "78803ea9-03be-4ad5-9c50-35c7c3e3cd74", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "876ea63a-af83-4aeb-81b7-a4650d3fa5c6", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "b59dfa82-8897-4d42-a772-83d12aa1a4d8", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "ae43b537-6cc3-48fe-8551-4057dcbb2f71", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "1eb88400-98ae-42a7-b4fe-aee98997cb8d", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "2b85c386-6b40-4dd5-9c8e-4b740f78423b", "to": "fa19ec6d-0f4b-428d-bf02-caff84684c6e"}, {"from": "2d40a883-4e9a-4163-901f-1c19f241b2fa", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "f993289c-7c07-4967-9887-6bef8d6043ec", "to": "b2535b92-b9b7-4aca-9dac-73e0056a72f0"}, {"from": "9d3641bc-a61c-47f3-a753-d0a6fe46a0c9", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "a19fc590-b10e-4400-ac50-fc6283aa173d", "to": "b2535b92-b9b7-4aca-9dac-73e0056a72f0"}, {"from": "6211b1b4-6562-47aa-a243-c49e3064b48e", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "c2d7f4bb-a683-433f-b82b-1f5d08574783", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "e02696cd-bdf7-4b96-a831-d104ff477f67", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "21a70273-d80e-4e98-a207-ea38f8e16cda", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "5dcd4f0f-ec6d-44d8-90bc-e3a28b3baf75", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "885b069c-61a1-4a89-9ae8-bf50189bc533", "to": "b2535b92-b9b7-4aca-9dac-73e0056a72f0"}, {"from": "53eceea2-aec1-43b2-a907-b72d9f95f0ec", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "0cdc053d-dfd3-4a7b-b78a-823b6a626206", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "fb23fb4a-f94d-426a-9a9a-4a63ef1193a0", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "69add7ea-c1d6-4957-873e-e2bc7ae0de8c", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "f6043fab-1512-490a-bee9-6696746b8052", "to": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1"}, {"from": "5875782f-8516-4029-997a-383e39557162", "to": "867a6cf8-223e-474a-9397-8ab9775bd14a"}, {"from": "8ec2f222-9fb6-45e0-aacd-e2019d9075b8", "to": "f6ebf273-7166-44a4-a62d-fa0962b9ac3b"}, {"from": "830c3872-14c2-40d1-bc1e-89680288b589", "to": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3"}, {"from": "dbefa13a-18b5-4d13-a255-a03ed706c92f", "to": "fa19ec6d-0f4b-428d-bf02-caff84684c6e"}, {"from": "e6431e81-3bd2-40ec-86c0-75d1f668bbed", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "7c555044-fdd1-43e5-8df1-86515b0c3c34", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "56278358-2fde-433f-abe7-06ea1dfc51e8", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "bd2029e2-9059-4807-a823-5eba30b8e525", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "2a22c5f6-0672-49ff-b8b6-bde1c4a8ede3", "to": "56278358-2fde-433f-abe7-06ea1dfc51e8"}, {"from": "e5691627-fef7-4e57-b542-696085708787", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "fa19ec6d-0f4b-428d-bf02-caff84684c6e", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "b2535b92-b9b7-4aca-9dac-73e0056a72f0", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}, {"from": "f6ebf273-7166-44a4-a62d-fa0962b9ac3b", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "4e9109ff-0e90-42b3-bdb1-b09a4ce1f8a6", "to": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1"}, {"from": "867a6cf8-223e-474a-9397-8ab9775bd14a", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "4b11b3cd-7a06-453d-a115-10af027b18f7", "to": "f6043fab-1512-490a-bee9-6696746b8052"}, {"from": "5b0b55ad-3465-43b7-9c37-55415ed6c5e7", "to": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1"}, {"from": "f2077619-cc7d-4c1f-aa40-c5540a69543a", "to": "fa19ec6d-0f4b-428d-bf02-caff84684c6e"}, {"from": "bfd0d42b-2086-4580-9df4-0bc78bfdf408", "to": "f6ebf273-7166-44a4-a62d-fa0962b9ac3b"}, {"from": "b68214ba-d90c-46fd-be11-8c79168a3463", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "ae72e00e-e679-4367-893a-4bc7a4814738", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "fcb359b1-5f9d-482a-8c35-084ddea4d51a", "to": "4e9109ff-0e90-42b3-bdb1-b09a4ce1f8a6"}, {"from": "0c1eb1a8-e9e9-4a19-a629-f4866581c44e", "to": "b2535b92-b9b7-4aca-9dac-73e0056a72f0"}, {"from": "8d4dfec6-ff24-4839-9d43-ee486637798f", "to": "f6043fab-1512-490a-bee9-6696746b8052"}, {"from": "56838410-51b4-41b4-bfe8-1dc7de19f003", "to": "cbd0a9fc-a0d0-40d1-8a17-aa66cb4029d1"}, {"from": "c070677e-31d2-40b4-a8bd-6223bba5eada", "to": "e5691627-fef7-4e57-b542-696085708787"}, {"from": "9f17cb45-a384-47a8-a93a-9fb57ce3d826", "to": "4acd9a7c-a4c2-4bc9-a83f-f97ab28bdfc7"}, {"from": "131a6733-3883-4da0-aada-93090b29551d", "to": "bd2029e2-9059-4807-a823-5eba30b8e525"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+        network.on("stabilizationProgress", function(params) {
+      		document.getElementById('loadingBar').removeAttribute("style");
+	        var maxWidth = 496;
+	        var minWidth = 20;
+	        var widthFactor = params.iterations/params.total;
+	        var width = Math.max(minWidth,maxWidth * widthFactor);
+
+	        document.getElementById('bar').style.width = width + 'px';
+	        document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+	    });
+	    network.once("stabilizationIterationsDone", function() {
+	        document.getElementById('text').innerHTML = '100%';
+	        document.getElementById('bar').style.width = '496px';
+	        document.getElementById('loadingBar').style.opacity = 0;
+	        // really clean the dom element
+	        setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+	    });
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
